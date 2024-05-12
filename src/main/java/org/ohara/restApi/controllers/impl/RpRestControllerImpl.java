@@ -98,7 +98,6 @@ public class RpRestControllerImpl implements RpRestController {
 
         Page<SessionCoursEtudiant> etudiants = sessionCoursService.getEtudiantsBySessionCoursAndClasse(sessionId,libelle,PageRequest.of(page,size));
         Page<SessionCoursEtudiantResponseDto> etudiantDto = etudiants.map(SessionCoursEtudiantResponseDto::toDto);
-
         Map<Object,Object> response = RestResponseDto.response(
                 etudiantDto.getContent(),
                 new int[etudiantDto.getTotalPages()],
@@ -126,6 +125,15 @@ public class RpRestControllerImpl implements RpRestController {
             coursService.addCours(coursDto);
             response = RestResponseDto.response(coursDto,HttpStatus.CREATED); //201
         }
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Map<Object,Object>> cancelSessionCours(Long sessionId) {
+        Map<Object, Object> response;
+            sessionCoursService.cancelSessionCours(sessionId);
+            response = RestResponseDto.response("Session de cours annulée avec succès",HttpStatus.CREATED); //201
+
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 

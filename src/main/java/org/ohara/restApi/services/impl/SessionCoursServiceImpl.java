@@ -88,27 +88,8 @@ public class SessionCoursServiceImpl implements SessionCoursService {
     @Override
     public Page<SessionCoursEtudiant> getEtudiantsBySessionCoursAndClasse(Long sessionId, String libelle, Pageable pageable) {
         return sessionCoursRepository.findBySessionCoursIdAndClasseLibelle(sessionId, libelle, pageable);
-
-        /*SessionCours sessionCours = sessionCoursRepository.findById(sessionId)
-                .orElseThrow(() -> new NoSuchElementException("SessionCours not found with id: " + sessionId));
-
-        List<SessionCoursEtudiant> sessionCoursEtudiants;
-        if (classeId != null) {
-            sessionCoursEtudiants = sessionCours.getSessionCoursEtudiants().stream()
-                    .filter(scEtudiant -> scEtudiant.getClasse().getId().equals(classeId))
-                    .collect(Collectors.toList());
-
-        } else {
-            sessionCoursEtudiants = sessionCours.getSessionCoursEtudiants();
-        }
-
-        int start = (int) pageable.getOffset();
-        //(start + pageable.getPageSize()) > sessionCoursEtudiants.size() ? sessionCoursEtudiants.size() : (start + pageable.getPageSize())
-        int end = Math.min((start + pageable.getPageSize()), sessionCoursEtudiants.size());
-        List<SessionCoursEtudiant> pageContent = sessionCoursEtudiants.subList(start, end);
-        return new PageImpl<>(pageContent, pageable, sessionCoursEtudiants.size());*/
-
     }
+
 
     @Override
     public void addSessionCours(SessionCoursRequestDto dto, Long coursId) {
@@ -138,6 +119,17 @@ public class SessionCoursServiceImpl implements SessionCoursService {
 
 
     }
+
+    @Override
+    public void cancelSessionCours(Long sessionId) {
+        SessionCours sessionCours = sessionCoursRepository.findById(sessionId)
+                .orElseThrow(() -> new NoSuchElementException("SessionCours not found with ID: " + sessionId));
+        sessionCours.setEtatSession(EEtatSession.INVALIDER);
+        sessionCours.setIsActive(false);
+        sessionCoursRepository.save(sessionCours);
+
+    }
+
     private long calculateHeurePlanifier(LocalTime heureDebut, LocalTime heureFin) {
         Duration duration = Duration.between(heureDebut, heureFin);
         return duration.toHours();

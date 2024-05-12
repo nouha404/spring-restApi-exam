@@ -39,6 +39,10 @@ public interface RpRestController {
     ResponseEntity<?> addCours(@Valid @RequestBody CoursRequestDto coursDto,
                                BindingResult bindingResult);
 
+    @DeleteMapping("/session/{sessionId}/cancel")
+    ResponseEntity<?> cancelSessionCours(
+            @PathVariable Long sessionId
+    );
     @PostMapping("/classes")
     ResponseEntity<?> addClasse(@Valid @RequestBody ClasseRequestDto classeDto,
                                BindingResult bindingResult);

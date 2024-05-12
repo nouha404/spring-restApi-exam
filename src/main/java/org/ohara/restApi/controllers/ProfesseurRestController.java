@@ -10,6 +10,5 @@ public interface ProfesseurRestController {
             @RequestParam(defaultValue = "0",name = "page") int page,
             @RequestParam(defaultValue = "8",name = "size") int size
     );
-    //Map<Object,Object>
 
 }

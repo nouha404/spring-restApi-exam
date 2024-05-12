@@ -18,7 +18,5 @@ public class SemestreServiceImpl implements SemestreService {
         semestre.setLibelle(semestre.getLibelle());
         semestre.setIsActive(true);
         semestreRepository.save(semestre);
-
-
     }
 }

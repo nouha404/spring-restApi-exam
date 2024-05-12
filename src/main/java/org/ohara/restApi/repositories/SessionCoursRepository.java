@@ -70,25 +70,6 @@ public interface SessionCoursRepository extends JpaRepository<SessionCours, Long
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
-
-    //nombre heure effectuer durant le mois
-    /*@Query("SELECT COALESCE(SUM(sc.nombreHeurePlanifier), 0) FROM SessionCours sc " +
-            "WHERE sc.cours.professeur.id = :professorId " +
-            "AND MONTH(sc.date) = :monthValue " +
-            "AND YEAR(sc.date) = :yearValue")
-    long getTotalHoursByProfessorForMonth(@Param("professorId") Long professorId,
-                                          @Param("monthValue") int monthValue,
-                                          @Param("yearValue") int yearValue);
-
-    @Query("SELECT COALESCE(SUM(sc.nombreHeurePlanifier), 0) FROM SessionCours sc " +
-            "WHERE sc.cours.professeur.id = :professorId " +
-            "AND sc.cours.module.id = :moduleId " +
-            "AND MONTH(sc.date) = :monthValue " +
-            "AND YEAR(sc.date) = :yearValue")
-    long getTotalHoursByProfessorAndModuleForMonth(@Param("professorId") Long professorId,
-                                                   @Param("moduleId") String moduleId,
-                                                   @Param("monthValue") int monthValue,
-                                                   @Param("yearValue") int yearValue);*/
     @Query("SELECT sc FROM SessionCours sc " +
             "WHERE sc.cours.professeur.id = :professorId " +
             "AND MONTH(sc.date) = :month " +
