@@ -2,6 +2,7 @@ package org.ohara.restApi.controllers;
 
 import jakarta.validation.Valid;
 import org.ohara.maVraiDep.data.web.dto.request.*;
+import org.ohara.maVraiDep.data.web.dto.response.ProfesseurSimpleResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,21 @@ public interface RpRestController {
 
     @GetMapping("/sessions")
     ResponseEntity<?> listeSessionCoursValid(
+            @RequestParam(defaultValue = "0",name = "page") int page,
+            @RequestParam(defaultValue = "5", name = "size") int size
+    );
+    @GetMapping("/classes")
+    ResponseEntity<?> allClasse(
+            @RequestParam(defaultValue = "0",name = "page") int page,
+            @RequestParam(defaultValue = "5", name = "size") int size
+    );
+    @GetMapping("/grades")
+    ResponseEntity<?> allGrades(
+            @RequestParam(defaultValue = "0",name = "page") int page,
+            @RequestParam(defaultValue = "5", name = "size") int size
+    );
+    @GetMapping("/spec")
+    ResponseEntity<?> allSepecialiter(
             @RequestParam(defaultValue = "0",name = "page") int page,
             @RequestParam(defaultValue = "5", name = "size") int size
     );
@@ -50,6 +66,10 @@ public interface RpRestController {
     @PostMapping("/salles")
     ResponseEntity<?> addSalle(@Valid @RequestBody SalleRequestDto salleDto,
                                 BindingResult bindingResult);
+
+    @PostMapping("/professeurs")
+    ResponseEntity<?> addProfesseur(@Valid @RequestBody ProfesseurSimpleResquestDto profDto,
+                               BindingResult bindingResult);
 
     @PostMapping("/semestres")
     ResponseEntity<?> addSemestre(@Valid @RequestBody SemestreRequestDto semestreDto,

@@ -1,11 +1,15 @@
 package org.ohara.restApi.controllers.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.ohara.maVraiDep.data.entitties.Classe;
 import org.ohara.maVraiDep.data.entitties.Cours;
 import org.ohara.maVraiDep.data.entitties.SessionCours;
 import org.ohara.maVraiDep.data.entitties.SessionCoursEtudiant;
 
+import org.ohara.maVraiDep.data.enums.ENiveau;
+import org.ohara.maVraiDep.data.enums.Specialiter;
 import org.ohara.maVraiDep.data.web.dto.request.*;
+import org.ohara.maVraiDep.data.web.dto.response.ClasseSimpleResponseDto;
 import org.ohara.maVraiDep.data.web.dto.response.CoursResponseDto;
 import org.ohara.maVraiDep.data.web.dto.response.SessionCoursEtudiantResponseDto;
 import org.ohara.maVraiDep.data.web.dto.response.SessionCoursResponseDto;
@@ -37,6 +41,7 @@ public class RpRestControllerImpl implements RpRestController {
     private final SalleService salleService;
     private final SemestreService semestreService;
     private final ModuleService moduleService;
+    private final ProfesseurService professeurService;
 
     @Override
     public ResponseEntity<Map<Object,Object>> listeCours(int page, int size, String etat) {
@@ -74,6 +79,46 @@ public class RpRestControllerImpl implements RpRestController {
         );
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<Map<Object,Object>> allClasse(int page, int size) {
+        Page<Classe> classes = classeService.getAllClasse(PageRequest.of(page,size));
+        Page<ClasseSimpleResponseDto> classeDto = classes.map(ClasseSimpleResponseDto::toDto);
+
+        Map<Object,Object> response = RestResponseDto.response(
+                classeDto.getContent(),
+                new int[classeDto.getTotalPages()],
+                classeDto.getNumber(),
+                page > 0 ? page-1:page,
+                page < classeDto.getTotalPages() - 1 ? page+1:page,
+                classeDto.getTotalElements(),
+                classeDto.getTotalPages(),
+                HttpStatus.OK
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Map<Object,Object>> allGrades(int page, int size) {
+        List<ENiveau> grades = List.of(ENiveau.values());
+
+        Map<Object,Object> response = RestResponseDto.response(
+                grades,
+                HttpStatus.OK
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> allSepecialiter(int page, int size) {
+        List<Specialiter> specialiters = List.of(Specialiter.values());
+        Map<Object,Object> response = RestResponseDto.response(
+                specialiters,
+                HttpStatus.OK
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 
     @Override
     public ResponseEntity<Map<Object,Object>> addSessionCours(Long coursId, SessionCoursRequestDto sessionCoursDto, BindingResult bindingResult) {
@@ -167,6 +212,23 @@ public class RpRestControllerImpl implements RpRestController {
         } else {
             salleService.addSalle(salleDto);
             response = RestResponseDto.response(salleDto,HttpStatus.CREATED); //201
+        }
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> addProfesseur(ProfesseurSimpleResquestDto profDto, BindingResult bindingResult) {
+        Map<Object, Object> response;
+        if(bindingResult.hasErrors()){
+            Map<String, String> errors = new HashMap<>();
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            fieldErrors.forEach(fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage()));
+
+            response = RestResponseDto.response(errors, HttpStatus.NOT_FOUND);
+
+        } else {
+            professeurService.addProfesseur(profDto);
+            response = RestResponseDto.response(profDto,HttpStatus.CREATED); //201
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
