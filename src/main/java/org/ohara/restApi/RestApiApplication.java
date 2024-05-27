@@ -8,8 +8,11 @@ import org.springframework.context.annotation.ComponentScan;
 //@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 
 //@ComponentScan(basePackages = {"org.ohara.restApi", "org.ohara.restApi.config"})
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
-@EntityScan("org.ohara.maVraiDep.data.entitties")
+@SpringBootApplication()
+@EntityScan(basePackages = {
+		"org.ohara.maVraiDep.data.entitties",
+		"org.ohara.maVraiDep.data.security.data.entities"
+})
 public class RestApiApplication {
 
 	public static void main(String[] args) {

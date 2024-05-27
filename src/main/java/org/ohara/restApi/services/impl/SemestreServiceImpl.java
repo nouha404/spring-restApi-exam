@@ -6,7 +6,11 @@ import org.ohara.maVraiDep.data.entitties.Semestre;
 import org.ohara.maVraiDep.data.web.dto.request.SemestreRequestDto;
 import org.ohara.restApi.repositories.SemestreRepository;
 import org.ohara.restApi.services.SemestreService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,5 +22,11 @@ public class SemestreServiceImpl implements SemestreService {
         semestre.setLibelle(semestre.getLibelle());
         semestre.setIsActive(true);
         semestreRepository.save(semestre);
+    }
+
+
+    @Override
+    public List<Semestre> getAllSemestre() {
+        return semestreRepository.findAllByIsActiveTrue();
     }
 }

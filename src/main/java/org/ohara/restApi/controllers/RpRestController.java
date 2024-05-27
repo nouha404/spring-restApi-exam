@@ -2,6 +2,7 @@ package org.ohara.restApi.controllers;
 
 import jakarta.validation.Valid;
 import org.ohara.maVraiDep.data.web.dto.request.*;
+import org.ohara.maVraiDep.data.web.dto.response.CoursResponseDto;
 import org.ohara.maVraiDep.data.web.dto.response.ProfesseurSimpleResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -12,8 +13,12 @@ public interface RpRestController {
     ResponseEntity<?> listeCours(
             @RequestParam(defaultValue = "0",name = "page") int page,
             @RequestParam(defaultValue = "5", name = "size") int size,
-            @RequestParam(required = false, name = "etat") String etat
+            @RequestParam(required = false, name = "etat") String etat,
+            @RequestParam(required = false, name = "id") Long id
     );
+
+    @GetMapping("/cours/{id}")
+    ResponseEntity<?> getCoursById(@PathVariable Long id);
 
     @GetMapping("/sessions")
     ResponseEntity<?> listeSessionCoursValid(
@@ -25,11 +30,32 @@ public interface RpRestController {
             @RequestParam(defaultValue = "0",name = "page") int page,
             @RequestParam(defaultValue = "5", name = "size") int size
     );
+    @GetMapping("/semestres")
+    ResponseEntity<?> allSemestre(
+            @RequestParam(defaultValue = "0",name = "page") int page,
+            @RequestParam(defaultValue = "5", name = "size") int size
+    );
+    @GetMapping("/professeurs")
+    ResponseEntity<?> getProfesseurs(@RequestParam(defaultValue = "0",name = "page") int page,
+                                     @RequestParam(defaultValue = "5", name = "size") int size);
+
     @GetMapping("/grades")
     ResponseEntity<?> allGrades(
             @RequestParam(defaultValue = "0",name = "page") int page,
             @RequestParam(defaultValue = "5", name = "size") int size
     );
+
+    @GetMapping("/salles")
+    ResponseEntity<?> allSalles(
+            @RequestParam(defaultValue = "0",name = "page") int page,
+            @RequestParam(defaultValue = "5", name = "size") int size
+    );
+    @GetMapping("/modules")
+    ResponseEntity<?> allModules(
+            @RequestParam(defaultValue = "0",name = "page") int page,
+            @RequestParam(defaultValue = "5", name = "size") int size
+    );
+
     @GetMapping("/spec")
     ResponseEntity<?> allSepecialiter(
             @RequestParam(defaultValue = "0",name = "page") int page,
@@ -50,6 +76,7 @@ public interface RpRestController {
             @RequestParam(defaultValue = "5", name = "size") int size,
             @RequestParam(required = false) String libelle
     );
+
 
     @PostMapping("/cours")
     ResponseEntity<?> addCours(@Valid @RequestBody CoursRequestDto coursDto,

@@ -24,7 +24,6 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/rp")
-
 public class AnneeScolaireRestControllerImpl implements AnneeScolaireRestController {
     private  final AnneeScolaireService anneeScolaireService;
     @Override

@@ -5,7 +5,6 @@ import org.ohara.maVraiDep.data.entitties.*;
 import org.ohara.maVraiDep.data.entitties.Module;
 import org.ohara.maVraiDep.data.enums.EtatCours;
 
-
 import org.ohara.maVraiDep.data.web.dto.request.CoursRequestDto;
 import org.ohara.restApi.repositories.*;
 import org.ohara.restApi.services.CoursService;
@@ -32,9 +31,11 @@ public class CoursServiceImpl implements CoursService {
     }
 
     @Override
-    public Page<Cours> getCours(String etatCours, Pageable page) {
+    public Page<Cours> getCours(String etatCours,Long id, Pageable page) {
         if (etatCours != null && !etatCours.isEmpty()) {
             return coursRepository.findAllByEtatCoursAndIsActiveTrue(EtatCours.valueOf(etatCours), page);
+        } else if (id!=null) {
+            return coursRepository.findById(id,page);
         } else {
             return coursRepository.findAllByIsActiveTrue(page);
         }
@@ -46,6 +47,11 @@ public class CoursServiceImpl implements CoursService {
     }
 
     @Override
+    public Cours getCoursById(Long id) {
+        return coursRepository.findByIdAndIsActiveTrue(id);
+    }
+
+    @Override
     public void addCours(CoursRequestDto dto) {
 
         try {
@@ -53,6 +59,7 @@ public class CoursServiceImpl implements CoursService {
             Cours cours = dto.TransformToEntity();
             AnneeScolaire anneeScolaire = anneeScolaireRepository.findByIsActiveTrue();
             Module module;
+
             if (cours.getModule() != null) {
                 if (cours.getModule().getId() != null) {
                     module = moduleRepository.findById(cours.getModule().getId())

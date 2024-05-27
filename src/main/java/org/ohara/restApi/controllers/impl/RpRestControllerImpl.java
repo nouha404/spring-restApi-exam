@@ -1,11 +1,9 @@
 package org.ohara.restApi.controllers.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.ohara.maVraiDep.data.entitties.Classe;
-import org.ohara.maVraiDep.data.entitties.Cours;
-import org.ohara.maVraiDep.data.entitties.SessionCours;
-import org.ohara.maVraiDep.data.entitties.SessionCoursEtudiant;
+import org.ohara.maVraiDep.data.entitties.*;
 
+import org.ohara.maVraiDep.data.entitties.Module;
 import org.ohara.maVraiDep.data.enums.ENiveau;
 import org.ohara.maVraiDep.data.enums.Specialiter;
 import org.ohara.maVraiDep.data.web.dto.request.*;
@@ -15,7 +13,6 @@ import org.ohara.maVraiDep.data.web.dto.response.SessionCoursEtudiantResponseDto
 import org.ohara.maVraiDep.data.web.dto.response.SessionCoursResponseDto;
 import org.ohara.restApi.controllers.RpRestController;
 import org.ohara.restApi.controllers.dto.response.RestResponseDto;
-import org.ohara.restApi.repositories.SalleRepository;
 import org.ohara.restApi.services.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,11 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/rp")
-
 public class RpRestControllerImpl implements RpRestController {
     private final CoursService coursService;
     private final SessionCoursService sessionCoursService;
@@ -44,9 +42,9 @@ public class RpRestControllerImpl implements RpRestController {
     private final ProfesseurService professeurService;
 
     @Override
-    public ResponseEntity<Map<Object,Object>> listeCours(int page, int size, String etat) {
+    public ResponseEntity<Map<Object,Object>> listeCours(int page, int size, String etat,Long id) {
 
-        Page<Cours> cours = coursService.getCours(etat, PageRequest.of(page,size));
+        Page<Cours> cours = coursService.getCours(etat,id ,PageRequest.of(page,size));
         Page<CoursResponseDto> coursDto = cours.map(CoursResponseDto::toDto);
 
         Map<Object,Object> response = RestResponseDto.response(
@@ -60,6 +58,17 @@ public class RpRestControllerImpl implements RpRestController {
                 HttpStatus.OK
         );
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> getCoursById(Long id) {
+        Cours cours = coursService.getCoursById(id);
+        Map<Object,Object> response = RestResponseDto.response(
+                cours,
+                HttpStatus.OK
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
     }
 
     @Override
@@ -99,9 +108,28 @@ public class RpRestControllerImpl implements RpRestController {
     }
 
     @Override
+    public ResponseEntity<Map<Object,Object>> allSemestre(int page, int size) {
+        List<Semestre> semestres = semestreService.getAllSemestre();
+
+        List<Map<String, Object>> semestreList = semestres.stream()
+                .map(semestre -> {
+                    Map<String, Object> semestreMap = new HashMap<>();
+                    semestreMap.put("id", semestre.getId());
+                    semestreMap.put("libelle", semestre.getLibelle());
+                    return semestreMap;
+                })
+                .toList();
+
+        Map<Object,Object> response = RestResponseDto.response(
+                semestreList,
+                HttpStatus.OK
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<Map<Object,Object>> allGrades(int page, int size) {
         List<ENiveau> grades = List.of(ENiveau.values());
-
         Map<Object,Object> response = RestResponseDto.response(
                 grades,
                 HttpStatus.OK
@@ -110,7 +138,45 @@ public class RpRestControllerImpl implements RpRestController {
     }
 
     @Override
-    public ResponseEntity<?> allSepecialiter(int page, int size) {
+    public ResponseEntity<Map<Object,Object>> allSalles(int page, int size) {
+        List<Salle> sallesList = salleService.getAllSalles();
+        List<Map<String, Object>> salles = sallesList.stream()
+                .map(salle -> {
+                    Map<String, Object> semestreMap = new HashMap<>();
+                    semestreMap.put("id", salle.getId());
+                    semestreMap.put("libelle", salle.getNom());
+                    return semestreMap;
+                })
+                .toList();
+
+        Map<Object,Object> response = RestResponseDto.response(
+                salles,
+                HttpStatus.OK
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> allModules(int page, int size) {
+        List<Module> modules = moduleService.getModule();
+        List<Map<String, Object>> modulesList = modules.stream()
+                .map(module -> {
+                    Map<String, Object> modulesMap = new HashMap<>();
+                    modulesMap.put("id", module.getId());
+                    modulesMap.put("libelle", module.getLibelle());
+                    return modulesMap;
+                })
+                .toList();
+        Map<Object,Object> response = RestResponseDto.response(
+                modulesList,
+                HttpStatus.OK
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    @Override
+    public ResponseEntity<Map<Object,Object>> allSepecialiter(int page, int size) {
         List<Specialiter> specialiters = List.of(Specialiter.values());
         Map<Object,Object> response = RestResponseDto.response(
                 specialiters,
@@ -151,6 +217,30 @@ public class RpRestControllerImpl implements RpRestController {
                 page < etudiantDto.getTotalPages() - 1 ? page+1:page,
                 etudiantDto.getTotalElements(),
                 etudiantDto.getTotalPages(),
+                HttpStatus.OK
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> getProfesseurs(int page, int size) {
+
+        Page<Professeur> professeurs = professeurService.getAllProfesseurs(PageRequest.of(page,size));
+        /*List<String> nomsComplets = professeurs.getContent().stream()
+                .map(professeur -> professeur.getPrenom() + " " + professeur.getNom())
+                .collect(Collectors.toList());*/
+
+        List<Map<String, Object>> professeursList = professeurs.getContent().stream()
+                .map(professeur -> {
+                    Map<String, Object> professeurMap = new HashMap<>();
+                    professeurMap.put("id", professeur.getId());
+                    professeurMap.put("nomComplet", professeur.getPrenom() + " " + professeur.getNom());
+                    return professeurMap;
+                })
+                .collect(Collectors.toList());
+
+        Map<Object,Object> response = RestResponseDto.response(
+                professeursList,
                 HttpStatus.OK
         );
         return new ResponseEntity<>(response, HttpStatus.OK);

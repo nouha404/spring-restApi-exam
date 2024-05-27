@@ -7,6 +7,8 @@ import org.ohara.restApi.repositories.ModuleRepository;
 import org.ohara.restApi.services.ModuleService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ModuleServiceImpl implements ModuleService {
@@ -20,4 +22,10 @@ public class ModuleServiceImpl implements ModuleService {
         moduleRepository.save(module);
 
     }
+
+    @Override
+    public List<Module> getModule() {
+        return moduleRepository.findAllByIsActiveTrue();
+    }
+
 }
